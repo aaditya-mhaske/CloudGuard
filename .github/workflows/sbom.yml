@@ -1,0 +1,37 @@
+name: CloudGuard SBOM
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  sbom:
+    name: Generate Container SBOM
+    runs-on: ubuntu-24.04
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Build CloudGuard image
+        run: docker build -t cloudguard:sbom .
+
+      - name: Generate SBOM
+        uses: aquasecurity/trivy-action@v0.36.0
+        with:
+          image-ref: cloudguard:sbom
+          format: cyclonedx
+          output: cloudguard-sbom.json
+          scanners: vuln
+
+      - name: Upload SBOM artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: cloudguard-sbom
+          path: cloudguard-sbom.json
+          retention-days: 30

@@ -6,3 +6,10 @@ venv/
 .envtrivy-report.json
 trivy-hardened-report.json
 trivy-report.json
+
+# Terraform local state
+.terraform/
+*.tfstate
+*.tfstate.*
+crash.log
+
